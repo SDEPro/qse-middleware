@@ -67,7 +67,7 @@ const requestUrl = url.parse(url.format({
 //Retrieve a Quicksight embed URL
 app.get('/qs-embed', (req, res) => {
 
-    //choose a different dash by setting the DashboardId in env vars on the sserver
+    //choose a different dash by setting the DashboardId in env vars on the server
     var params = {
 	AwsAccountId: process.env.AWSAccountId,
 	DashboardId: process.env.DashboardId,

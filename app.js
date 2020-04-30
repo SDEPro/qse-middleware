@@ -7,7 +7,7 @@ const app = express();
 const https = require('https');
 const url = require('url');
 
-//Used for QS dashboard embed URL (used by qs-embed route) 
+//Used for QS dashboard embed URL (used by /qs-embed) 
 const qs = require('amazon-quicksight-embedding-sdk');
 const AWS = require('aws-sdk');
 
@@ -20,18 +20,20 @@ AWS.config.update({
     region:'us-east-1'
 });
 
-//Prevents CORS issues when processing response from news route
+//Prevents CORS issues when processing response from /news
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   next();
 });
 
 
-//Calls google news RSS (need an alternative. see https://stackoverflow.com/questions/7806200/what-to-use-now-google-news-api-is-deprecated)
-//Note: query parameters are passed without modification
-app.get('/news', (req, res) => {
+//Calls google news RSS
+//Fix: find an alternative. see
+//https://stackoverflow.com/questions/7806200/what-to-use-now-google-news-api-is-deprecated
 
-//callback = 
+//Note: query parameters are passed without modification
+//Resulting URL: https://news.google.com/rss/search/?<PASSED QUERY>
+app.get('/news', (req, res) => {
 
 const requestUrl = url.parse(url.format({
     protocol: 'https',
@@ -51,7 +53,6 @@ const requestUrl = url.parse(url.format({
 		     response.on('data', function (chunk) {
 			 str += chunk;
 		     });
-
 		     response.on('end', function () {
 			 res.set('Content-Type', 'application/xml');
 			 res.send(str);
@@ -66,7 +67,7 @@ const requestUrl = url.parse(url.format({
 //Retrieve a Quicksight embed URL
 app.get('/qs-embed', (req, res) => {
 
-
+    //choose a different dash by setting the DashboardId in env vars on the sserver
     var params = {
 	AwsAccountId: process.env.AWSAccountId,
 	DashboardId: process.env.DashboardId,
@@ -94,5 +95,3 @@ app.get('/qs-embed', (req, res) => {
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
 });
-
-

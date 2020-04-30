@@ -31,22 +31,7 @@ app.use((req, res, next) => {
 //Note: query parameters are passed without modification
 app.get('/news', (req, res) => {
 
-callback = (response) => {
-
-    var str = '';
-        response.on('data', function (chunk) {
-              str += chunk;
-        });
-
-        response.on('end', function () {
-	    res.set('Content-Type', 'application/xml');
-	    res.send(str);
-	    res.end();
-        });
-    response.on('error', function (e) {
-              console.log("error: "+e);
-    }); 
-}
+//callback = 
 
 const requestUrl = url.parse(url.format({
     protocol: 'https',
@@ -60,7 +45,22 @@ const requestUrl = url.parse(url.format({
 	path: requestUrl.path
     };
 
-    https.request(options, callback).end();
+    https.request(options,
+		 (response) => {
+		     var str = '';
+		     response.on('data', function (chunk) {
+			 str += chunk;
+		     });
+
+		     response.on('end', function () {
+			 res.set('Content-Type', 'application/xml');
+			 res.send(str);
+			 res.end();
+		     });
+		     response.on('error', function (e) {
+			 console.log("error: "+e);
+		     }); 
+		 }).end();
 });
 
 //Retrieve a Quicksight embed URL
@@ -72,6 +72,7 @@ app.get('/qs-embed', (req, res) => {
 	DashboardId: process.env.DashboardId,
 	IdentityType: 'IAM'
     };
+
     let quicksight = new AWS.QuickSight();
     quicksight.getDashboardEmbedUrl(params, function(err, data) {
      	if (err) {

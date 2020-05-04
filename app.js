@@ -7,6 +7,9 @@ const app = express();
 const https = require('https');
 const url = require('url');
 
+
+//*********QuickSight
+
 //Used for QS dashboard embed URL (used by /qs-embed) 
 const qs = require('amazon-quicksight-embedding-sdk');
 const AWS = require('aws-sdk');
@@ -19,6 +22,39 @@ AWS.config.update({
     secretAccessKey: process.env.SAK,
     region:'us-east-1'
 });
+
+
+//Retrieve a QuickSight embed URL
+app.get('/qs-embed', (req, res) => {
+
+    //choose a different dash by setting the DashboardId in env vars on the server
+    let params = {
+	AwsAccountId: process.env.AWSAccountId,
+	DashboardId: process.env.DashboardId,
+	IdentityType: 'IAM'
+    };
+
+    let quicksight = new AWS.QuickSight();
+    quicksight.getDashboardEmbedUrl(params, function(err, data) {
+     	if (err) {
+	    console.log(err, err.stack);
+	    res.status(500)
+		.send(err)
+		.end();
+	}
+    	else {
+	    res.set('Content-Type', 'text/html')
+		.status(200)
+		.send(data.EmbedUrl)
+		.end();
+	}
+    });
+
+});
+
+
+
+//********** Google News 
 
 //Prevents CORS issues when processing response from /news
 app.use((req, res, next) => {
@@ -42,14 +78,14 @@ const requestUrl = url.parse(url.format({
     query: req.query
 }));
     
-    var options = {
+    let options = {
 	hostname: requestUrl.hostname,
 	path: requestUrl.path
     };
 
     https.request(options,
 		 (response) => {
-		     var str = '';
+		     let str = '';
 		     response.on('data', function (chunk) {
 			 str += chunk;
 		     });
@@ -64,34 +100,6 @@ const requestUrl = url.parse(url.format({
 		 }).end();
 });
 
-//Retrieve a Quicksight embed URL
-app.get('/qs-embed', (req, res) => {
-
-    //choose a different dash by setting the DashboardId in env vars on the server
-    var params = {
-	AwsAccountId: process.env.AWSAccountId,
-	DashboardId: process.env.DashboardId,
-	IdentityType: 'IAM'
-    };
-
-    let quicksight = new AWS.QuickSight();
-    quicksight.getDashboardEmbedUrl(params, function(err, data) {
-     	if (err) {
-	    console.log(err, err.stack);
-	    res.status(500)
-		.send(err)
-		.end();
-	}
-    	else {
-	    res.set('Content-Type', 'text/html')
-		.status(200)
-		.send(data.EmbedUrl)
-		.end();
-	}
-    });
-
-});
-    
 app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`)
 });

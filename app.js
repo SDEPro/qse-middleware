@@ -23,6 +23,12 @@ AWS.config.update({
     region:'us-east-1'
 });
 
+//Prevents CORS issues
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 
 //Retrieve a QuickSight embed URL
 app.get('/qs-embed', (req, res) => {
@@ -55,13 +61,6 @@ app.get('/qs-embed', (req, res) => {
 
 
 //********** Google News 
-
-//Prevents CORS issues when processing response from /news
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-
 
 //Calls google news RSS
 //Fix: find an alternative. see

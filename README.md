@@ -9,10 +9,10 @@ The `/qs-embed` endpoint requires the Amazon QuickSight Embedding SDK. Install i
 ```shell
     npm install amazon-quicksight-embedding-sdk
 ```
-This project assumes:
-- that you've created a dashboard for embedding, set the security appropriately and have the 
+This project assumes that:
+- you've created a dashboard for embedding, set the security appropriately and have the 
 ID of the dashboard.
-- You have an AWS `accessKeyId` and `secretAccess Key` for an account with appropriate permissions for getting an embed URL
+- you have an AWS `accessKeyId` and `secretAccess Key` for an account with appropriate permissions for getting an embed URL
 
 You'll also need your AWS Account ID.
 
